@@ -1,28 +1,13 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "link.h"
+#include "graphs.h"
 
 int getrand(int min, int max)
 {
     return (double)rand() / (RAND_MAX + 1.0) * (max - min) + min;
-}
-
-void edge_add(struct edge *edges[], int src, int dest, int index)
-{
-    struct edge *node;
-    node = malloc(sizeof(*node));
-    if ( src < dest ) {
-        node->src = src;
-        node->dest = dest;
-    }
-    else 
-    {
-        node->src = dest;
-        node->dest = src;
-    }
-    node->value = getrand(1, 10);
-    edges[index] = node;
 }
 
 int check(struct edge *edges[], int edges_count, int src, int dest)
@@ -65,7 +50,7 @@ void swap(int *a, int *b) {
     *b = temp;
 }
 
-struct edge **generate_link(struct edge **edges, int *edges_count)
+void generate_link(struct edge **edges, int *edges_count)
 {
     for ( int i = 0; i < LCOUNT; i++ )
     {
@@ -90,21 +75,20 @@ struct edge **generate_link(struct edge **edges, int *edges_count)
 
             if ( !include )
             {
-                edge_add(edges, src, dest, *edges_count);
+                edge_add(edges, src, dest, *edges_count, getrand(1, 10));
                 //printf("\n%d->%d\n", src, dest);
                 *edges_count += 1; //  ??
                 if ( check_all(edges, *edges_count) )
-                    return edges;
+                    return;
             }
         }
     }
     printf("No");
 }
 
-void create_link_graph(int matrix[LCOUNT][LCOUNT], edge **edges, int *edges_count)
+void create_link_graph(int **matrix, edge **edges, int *edges_count)
 {
     generate_link(edges, edges_count);
-    printf("Linked graph with %d vertices:\n", *edges_count);
     for ( int i = 0; i < LCOUNT; i++ )
     {
         for ( int j = 0; j < LCOUNT; j++ )
